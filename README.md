@@ -1,6 +1,7 @@
 # Ampd Energy Device Savings API
 
 **Repository UUID:** 4841cb59-343d-48ae-955e-2a549a387422
+**Deployed Link:** https://coding-challenge-ampd.vercel.app
 
 A Node.js API and Vue.js frontend for visualizing carbon and diesel savings from Ampd Energy devices.
 
@@ -14,7 +15,7 @@ A Node.js API and Vue.js frontend for visualizing carbon and diesel savings from
 
 ## Prerequisites
 
-- Node.js v18.19.0
+- Node.js v22.x (or v18.x for local development)
 - npm or yarn
 
 ## Quick Start
@@ -108,7 +109,7 @@ The API loads data from CSV files in the `./data` directory:
 ## Technology Stack
 
 ### Backend
-- Node.js v18.19.0
+- Node.js v22.x (Vercel) / v18.x+ (local)
 - TypeScript
 - Express.js
 - CSV Parser
@@ -157,7 +158,9 @@ The API loads data from CSV files in the `./data` directory:
 This application is designed to run on:
 - macOS
 - Linux
-- Node.js v18.19.0
+- Windows
+- Node.js v18.x+ (local development)
+- Node.js v22.x (Vercel deployment)
 
 ## Sample API Usage
 
