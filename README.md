@@ -24,13 +24,20 @@ A Node.js API and Vue.js frontend for visualizing carbon and diesel savings from
    npm install
    ```
 
-2. **Start the server:**
+2. **Start development server:**
    ```bash
-   npm start
+   npm run dev
    ```
 
 3. **Open your browser:**
    Navigate to `http://localhost:3000`
+
+### Production Build
+
+```bash
+npm run build
+npm start
+```
 
 ## Development
 
@@ -73,13 +80,13 @@ npm start
 - `GET /api/devices/:id` - Get device details
 
 ### Device Savings
-- `GET /api/device-savings/:id/savings` - Get raw savings data
+- `GET /api/device-savings/:id` - Get raw savings data
   - Query params: `start_date`, `end_date`, `timezone`
-- `GET /api/device-savings/:id/savings/aggregated` - Get aggregated data for charts
+- `GET /api/device-savings/:id/aggregated` - Get aggregated data for charts
   - Query params: `start_date`, `end_date`, `interval` (hour/day/month/raw), `timezone`
 
 ### Device Statistics
-- `GET /api/device-stats/:id/stats/monthly` - Get monthly statistics (average per month)
+- `GET /api/device-stats/:id/monthly` - Get monthly statistics (average per month)
 
 ### Health Check
 - `GET /api/health` - API health status
@@ -102,9 +109,11 @@ The API loads data from CSV files in the `./data` directory:
 
 ### Backend
 - Node.js v18.19.0
+- TypeScript
 - Express.js
 - CSV Parser
 - Moment.js with timezone support
+- Vercel serverless functions
 
 ### Frontend
 - Vue.js 3
@@ -114,23 +123,33 @@ The API loads data from CSV files in the `./data` directory:
 ## Project Structure
 
 ```
-├── server.js          # Main server file
-├── package.json       # Dependencies and scripts
-├── public/            # Frontend files
-│   ├── index.html     # Main HTML file
-│   └── app.js         # Vue.js application
-├── routes/            # API route handlers
-│   ├── index.js       # Main router configuration
-│   ├── devices.js     # Device endpoints
-│   ├── deviceSavings.js # Device savings endpoints
-│   ├── deviceStats.js # Device statistics endpoints
-│   └── health.js      # Health check endpoint
-├── utils/             # Utility functions
-│   └── dataLoader.js  # CSV data loading and caching
-├── data/              # CSV data files
-│   ├── devices.csv    # Device information
-│   └── device-saving.csv # Time series savings data
-└── README.md          # This file
+├── api/                    # Vercel serverless functions
+│   ├── index.ts           # Main API handler
+│   └── health.ts          # Health check endpoint
+├── src/                   # TypeScript source code
+│   ├── routes/            # API route handlers
+│   │   ├── index.ts       # Main router configuration
+│   │   ├── devices.ts     # Device endpoints
+│   │   ├── deviceSavings.ts # Device savings endpoints
+│   │   ├── deviceStats.ts # Device statistics endpoints
+│   │   └── health.ts      # Health check endpoint
+│   ├── utils/             # Utility functions
+│   │   ├── dataLoader.ts  # CSV data loading and caching
+│   │   └── compute.ts     # Data computation utilities
+│   ├── types/             # TypeScript type definitions
+│   │   └── index.ts       # Shared interfaces and types
+│   └── server.ts          # Express server (for local development)
+├── public/                # Frontend files
+│   ├── index.html         # Main HTML file
+│   └── app.js             # Vue.js application
+├── data/                  # CSV data files
+│   ├── devices.csv        # Device information
+│   └── device-saving.csv  # Time series savings data
+├── dist/                  # Compiled TypeScript output
+├── vercel.json            # Vercel deployment configuration
+├── tsconfig.json          # TypeScript configuration
+├── DEPLOYMENT.md          # Deployment guide
+└── README.md              # This file
 ```
 
 ## Environment Compatibility
@@ -147,10 +166,10 @@ This application is designed to run on:
 curl http://localhost:3000/api/devices
 
 # Get device savings for date range with data
-curl "http://localhost:3000/api/devices/1/savings/aggregated?start_date=2023-12-01&end_date=2024-01-31&interval=month"
+curl "http://localhost:3000/api/device-savings/1/aggregated?start_date=2023-12-01&end_date=2024-01-31&interval=month"
 
 # Get monthly average statistics
-curl http://localhost:3000/api/devices/1/stats/monthly
+curl http://localhost:3000/api/device-stats/1/monthly
 
 # Health check
 curl http://localhost:3000/api/health
@@ -163,9 +182,24 @@ curl http://localhost:3000/api/health
 - **Date Range**: Sample data spans from 2023 to early 2024
 - **Chart**: Displays monthly aggregated totals for the selected date range
 
-## Notes
+## Architecture Notes
 
+### TypeScript Migration
+- Full TypeScript implementation with strict type checking
+- Comprehensive type definitions for all data structures
+- Enhanced IDE support and compile-time error detection
+
+### Deployment Options
+- **Vercel**: Serverless functions with automatic scaling
+- **Traditional**: Standard Node.js hosting with compiled JavaScript
+
+### Performance
 - Data is loaded into memory on server startup for fast access
+- Singleton pattern prevents duplicate data loading in serverless functions
 - Timezone handling uses the device's configured timezone
-- Chart data is aggregated by day for better performance
-- The UI closely matches the provided mockup design
+- Chart data is aggregated by intervals for better performance
+
+### Development
+- Hot reload with `ts-node-dev` for rapid development
+- Separate TypeScript source and compiled JavaScript output
+- Legacy JavaScript routes maintained for compatibility
