@@ -48,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle the request with Express
     app(expressReq, expressRes);
   } catch (error) {
-    console.error('Handler error:', error);
+    console.error('Handler error=', error);
     res.status(500).json({ 
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error'
